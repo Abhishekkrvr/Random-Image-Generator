@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Random Picture Generator</title>
+  <style>
+    :root {
+      --primary: #00796b;
+      --secondary: #00afff;
+      --highlight: #f08080;
+      --light-text: #fff;
+      --dark-text: #333;
+      --card-bg: #fff;
+      --shadow: 0 8px 20px rgba(0,0,0,0.2);
+      --transition-speed: all 0.3s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      background: var(--secondary);
+      color: var(--light-text);
+      padding: 10px;
+      line-height: 1.6;
+    }
+
+    header {
+      text-align: center;
+      margin: 30px 0 20px;
+      padding: 0 10px;
+      width: 100%;
+    }
+
+    header h1 {
+      font-size: clamp(1.8rem, 5vw, 2.5rem);
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 25px;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      background: var(--card-bg);
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition-speed);
+      flex: 1;
+      min-width: 160px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    button:hover {
+      background: #e0f2f1;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+
+    button:active {
+      transform: translateY(-1px);
+    }
+
+    #imageContainer {
+      background: var(--card-bg);
+      color: var(--dark-text);
+      width: 100%;
+      max-width: 1200px;
+      min-height: 300px;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      transition: var(--transition-speed);
+    }
+
+    #imageContainer img {
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      transition: var(--transition-speed);
+      max-width: 100%;
+      height: auto;
+      object-fit: cover;
+    }
+
+    #imageContainer img:hover {
+      transform: scale(1.03);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    }
+
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+      width: 100%;
+    }
+
+    .image-grid img {
+      width: 100%;
+      height: 200px;
+    }
+
+    .placeholder {
+      text-align: center;
+      color: #666;
+      font-size: 1.1rem;
+    }
+
+    /* Loader */
+    .loader {
+      width: 48px;
+      height: 48px;
+      margin: auto;
+      position: relative;
+    }
+
+    .loader:before {
+      content: '';
+      width: 48px;
+      height: 5px;
+      background: #f0808050;
+      position: absolute;
+      top: 60px;
+      left: 0;
+      border-radius: 50%;
+      animation: shadowAnim 0.5s linear infinite;
+    }
+
+    .loader:after {
+      content: '';
+      width: 100%;
+      height: 100%;
+      background: var(--highlight);
+      position: absolute;
+      top: 0;
+      left: 0;
+      border-radius: 4px;
+      animation: jumpAnim 0.5s linear infinite;
+    }
+
+    @keyframes jumpAnim {
+      15% { border-bottom-right-radius: 3px; }
+      25% { transform: translateY(9px) rotate(22.5deg); }
+      50% { transform: translateY(18px) scale(1,.9) rotate(45deg); border-bottom-right-radius: 40px; }
+      75% { transform: translateY(9px) rotate(67.5deg); }
+      100% { transform: translateY(0) rotate(90deg); }
+    }
+
+    @keyframes shadowAnim {
+      0%,100% { transform: scale(1,1); }
+      50% { transform: scale(1.2,1); }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .btn-group { flex-direction: column; max-width: 300px; }
+      button { width: 100%; }
+      .image-grid { grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 15px; }
+      .image-grid img { height: 180px; }
+    }
+
+    @media (max-width: 480px) {
+      #imageContainer { min-height: 250px; padding: 10px; gap: 10px; }
+      .image-grid { grid-template-columns: 1fr; gap: 10px; }
+      .image-grid img { height: 160px; }
+      .placeholder { font-size: 1rem; }
+    }
+
+    footer {
+      margin-top: 30px;
+      text-align: center;
+      padding: 15px;
+      font-size: 0.9rem;
+      opacity: 0.8;
+      width: 100%;
+    }
+
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🎲 Random Picture Generator</h1>
+  </header>
+
+  <div class="btn-group">
+    <button id="onePicBtn">Get One Picture</button>
+    <button id="galleryBtn">Get Gallery</button>
+  </div>
+
+  <div id="imageContainer">
+    <p class="placeholder">Hit a button and enjoy the view!</p>
+  </div>
+
+  <footer>
+    <p>By Abhishek Kumar Verma</p>
+  </footer>
+
+  <script>
+    const imageContainer = document.getElementById("imageContainer");
+    const onePicButton = document.getElementById("onePicBtn");
+    const galleryButton = document.getElementById("galleryBtn");
+
+    // Simple loader display
+    function showLoading() {
+      imageContainer.innerHTML = '<div class="loader"></div>';
+    }
+
+    // Fetch a single random picture
+    async function loadSinglePicture() {
+      showLoading();
+      try {
+        const timestamp = Date.now();
+        const res = await fetch(`https://picsum.photos/800/500?t=${timestamp}`);
+        const url = res.url;
+        imageContainer.innerHTML = `<img src="${url}" alt="Random Picture">`;
+      } catch (err) {
+        imageContainer.innerHTML = `<p style="color:red; text-align:center;">Error loading image: ${err.message}</p>`;
+      }
+    }
+
+    // Fetch a gallery of random pictures
+    async function loadGallery() {
+      showLoading();
+      try {
+        const grid = document.createElement('div');
+        grid.className = 'image-grid';
+
+        const requests = [];
+        for (let i=0; i<6; i++) {
+          const ts = Date.now() + i;
+          requests.push(fetch(`https://picsum.photos/400/300?random=${ts}`));
+        }
+
+        const responses = await Promise.all(requests);
+        responses.forEach(res => {
+          const img = document.createElement('img');
+          img.src = res.url;
+          img.alt = "Random Picture";
+          grid.appendChild(img);
+        });
+
+        imageContainer.innerHTML = '';
+        imageContainer.appendChild(grid);
+      } catch(err) {
+        imageContainer.innerHTML = `<p style="color:red; text-align:center;">Error loading gallery: ${err.message}</p>`;
+      }
+    }
+
+    // Event listeners
+    onePicButton.addEventListener('click', loadSinglePicture);
+    galleryButton.addEventListener('click', loadGallery);
+  </script>
+
+</body>
+</html>
